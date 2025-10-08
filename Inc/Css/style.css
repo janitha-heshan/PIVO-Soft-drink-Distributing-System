@@ -1,0 +1,58 @@
+/* Shared styles moved from inline attributes and prefixed with j- */
+
+.j-root {
+  font-family:  ;
+  --select-button-svg: url(&apos;data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2724px%27 height=%2724px%27 fill=%27rgb(76,128,154);
+}
+
+.j-layout-container { }
+.j-layout-content-container { }
+.j-size-4 { }
+.j-size-10 { }
+
+.j-avatar-1 {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCyw76dhkcrv2XqCgZrIUHY96mlAzpsI43svan46WeZNBhi05XmZ6O5woB3tYd2_bFk0-UqWWcbM9pBnZyAAo8NjKRnVU1zeYzzTtf0mBMz0ObK4JyZT4BXvL7FQObHuuXiGC2o2X4HdjmpMfS8-AqhUuuvwhp6o58khsDQGtpesID8TofuTxbnN2dBVwQbfDU26UKYaxBT92-nQc7KKMsTu6hXB2S3CTLWEJ9_4yDT_SN1-S26OkEsCw1WxRI9n2eTHl3oOJP5raA");
+}
+.j-avatar-1 {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB8UEJ2STTkAJzMk4-BFeltV_vokPR7TPOvdaDneOQo-f3p54vtRXIKAx5bl7-Fs4ZUCRYo61Gs0xSfYPmjgGjTwfA7dtgbMAoxpYVwIsH3Fj5t7J7dPaXQQAL_8voefQ8B7n0_WBCKH_mjlf-j_7l4KFUofjAsb2XHhMU1xNvWwPHq96k_vhatbFoxe-qpBNYQhTHp34MJ0SnyrBqWgwg2eFN2TbTB2nKnns276P1cb7PFOBegVxfFGurNZ-UBojdHfQ7_aeV0fBU");
+}
+.j-avatar-2 {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCzkU6ntGhNzqVxhfwbWwGX33oUrMFbwsXU4dbaI-_-jTxX3_V7LZSdEG5uEcwqaRwTJNyMH_U1t0mhCyQw-idpRIMz6nTpQrEp8iwxagPBgrHWkoV1nCBmEB2AAXaM9VhUPl-fzRrPmS4Z_wcZscxD3kj30wEdEGvCgZvmnG8G56srnlUSRNqJgf-gpNcJswhZLRBKpQc_AKvBBTYSAIMp0u18Q7PQOFsInXNQzgUYtpXaJS9eaaWUMQxi2-aAEA5IHhogp1kqZng");
+}
+.j-avatar-3 {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCUR9td1iJekwZGb396tQp--pJiHTaNz8HfDTlJ8RZKaD7JE4_nyMhfCOwCldwPYk5pluFCOoMWjYujdIGcsqHg8pOKYJc8seMZgmxcjKCNCkc-pBXV485zIhtJXvZNJuazxnVaDfyDPigGRXDT8Nq1KJMhpPCfHXo3LZnwqJ0U-w0QM2wR3EIKvT4y5P3H39_rXCovG5TkEfjKl5OFOlIPHFaYB7k6dCAr5M3yx2Hsjos6iUq4JPdVtiKVfJgwwi5zito4lGXXyqk");
+}
+.j-avatar-1 {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDQcE5je7DHIAbGJUTDqPorHQBrvQxNlVwgtz3yTZRxGD24_unhei8mndGI1EDcQ5IN8OBLI0TxmaXNihYujC1uh2y-lbjQNnggZdVq5g-KEY9cl2QCoAnkDhr8ambd4HCT6WI6J7ntSotiVGM2-sqvz2yUAG8a6uAHgkGkuYDLQBR_IOHHFd4BiCUlgAo6iDf6v2e6gVYJHT187OMabpf_jMak7LjEUfBxfyRAiqbpou3zuiFpwpiubw_gGmBO1muAzzu9kAWHw1M");
+}
+
+@container(max-width:120px){.j-table-f1b417a4-bddd-4441-961e-5969001f5486-column-120{display: none;}}
+                @container(max-width:240px){.j-table-f1b417a4-bddd-4441-961e-5969001f5486-column-240{display: none;}}
+
+@container(max-width:120px){.j-table-9e2cc523-ec92-47bf-9861-47fc055a0074-column-120{display: none;}}
+                @container(max-width:240px){.j-table-9e2cc523-ec92-47bf-9861-47fc055a0074-column-240{display: none;}}
+
+@container(max-width:120px){.j-table-e890d7ff-fadd-4f5e-830f-1d23259c1b70-column-120{display: none;}}
+                @container(max-width:240px){.j-table-e890d7ff-fadd-4f5e-830f-1d23259c1b70-column-240{display: none;}}
+                @container(max-width:360px){.j-table-e890d7ff-fadd-4f5e-830f-1d23259c1b70-column-360{display: none;}}
+
+@container(max-width:120px){.j-table-8d03c77b-5d5a-4da9-bda1-eac5120bae42-column-120{display: none;}}
+                @container(max-width:240px){.j-table-8d03c77b-5d5a-4da9-bda1-eac5120bae42-column-240{display: none;}}
+                @container(max-width:360px){.j-table-8d03c77b-5d5a-4da9-bda1-eac5120bae42-column-360{display: none;}}
+                @container(max-width:480px){.j-table-8d03c77b-5d5a-4da9-bda1-eac5120bae42-column-480{display: none;}}
+                @container(max-width:600px){.j-table-8d03c77b-5d5a-4da9-bda1-eac5120bae42-column-600{display: none;}}
