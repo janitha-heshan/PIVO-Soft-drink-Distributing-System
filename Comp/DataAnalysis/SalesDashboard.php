@@ -43,7 +43,7 @@ $lastMonthChange = 15; // Percentage change for last month
         $current_page = basename(__FILE__);
         echo generateHeader($current_page);
         ?>
-        <div class="px-40 flex flex-1 justify-center py-5">
+        <div class="px-40 flex flex-1 justify-center py-5 ">
             <div class="flex flex-col max-w-[960px] flex-1">
                 <div class="flex flex-wrap justify-between gap-3 p-4">
                     <p class="text-[#0d171b] tracking-light text-[32px] font-bold leading-tight min-w-72">Sales Overview</p>
