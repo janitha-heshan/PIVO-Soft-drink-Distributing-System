@@ -2,6 +2,10 @@
 require_once 'db_connection.php'; 
 header("Content-Type: text/html; charset=utf-8"); 
 
+// Runs Prediction Script
+exec("python C:/xampp/htdocs/PIVO-Soft-drink-Distributing-System/scripts/train_and_predict.py");
+
+
 /**
  * 1. REVENUE HELPERS
  * Reference Date: 2026-01-17 (matching your database dump)
