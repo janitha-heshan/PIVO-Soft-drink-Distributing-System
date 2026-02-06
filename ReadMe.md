@@ -1,6 +1,6 @@
-Anti-Gravity Soft Drink Distributing System
+PIVO Soft Drink Distributing System
 Project Overview
-The Anti-Gravity system is a comprehensive web-based platform designed for M/S Pivo Holdings (pvt) Ltd. It serves two primary functions:
+The PIVO system is a comprehensive web-based platform designed for M/S Pivo Holdings (pvt) Ltd. It serves two primary functions:
 
 Internal Management: Automating manual documentation for inventory, sales, and logistics with high-precision geographical tracking.
 

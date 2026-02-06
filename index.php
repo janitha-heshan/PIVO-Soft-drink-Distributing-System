@@ -135,7 +135,7 @@ require_once 'includes/auth.php'; // For getDashboardPath
 
     <div class="hero-section">
         <h1 class="hero-title">Taste the Future<br>of Refreshment.</h1>
-        <p class="hero-sub">Premium fruit nectars delivered with anti-gravity precision. Experience the PIVO difference
+        <p class="hero-sub">Premium fruit nectars delivered with absolute precision. Experience the PIVO difference
             today.</p>
 
         <?php if (isset($_SESSION['user_id'])): ?>
@@ -214,7 +214,7 @@ require_once 'includes/auth.php'; // For getDashboardPath
             <a href="#" style="color:#666; text-decoration:none;">Privacy Policy</a>
             <a href="#" style="color:#666; text-decoration:none;">Contact</a>
         </div>
-        <small>© <?php echo date('Y'); ?> PIVO Holdings. <br> Powered by Anti-Gravity Systems.</small>
+        <small>© <?php echo date('Y'); ?> PIVO Holdings.</small>
     </footer>
 
 </body>

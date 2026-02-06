@@ -85,7 +85,7 @@ require_once 'includes/auth.php'; // For getDashboardPath
                 <p style="margin-bottom: 30px; line-height: 1.8; color: #555; font-size: 16px;">
                     We are dedicated to bringing the freshest, most authentic fruit nectars to every corner of the
                     island.
-                    Using our state-of-the-art <strong>Anti-Gravity Distribution System</strong>, we ensure that our
+                    Using our state-of-the-art <strong>PIVO Distribution System</strong>, we ensure that our
                     shop partners
                     never run out of stock and that our customers always get the premium quality they deserve.
                 </p>
