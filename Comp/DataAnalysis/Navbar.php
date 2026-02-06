@@ -8,11 +8,11 @@ function generateHeader($currentPage, $isRoot = false)
     $prefix = $isRoot ? '' : '../../';
 
     $navLinks = [
-        ['text' => 'Dashboard', 'file' => 'index.php'],
+        ['text' => 'Dashboard', 'file' => 'admin/dashboard.php'],
         ['text' => 'Sales Overview', 'file' => 'Comp/DataAnalysis/SalesDashboard.php'],
         ['text' => 'Sales Insights', 'file' => 'Comp/DataAnalysis/insights.php'],
         ['text' => 'Vendor Performance', 'file' => 'Comp/DataAnalysis/vendor_overview.php'],
-        ['text' => 'Inventory', 'file' => 'Comp/Inventory/inventory_management.php'],
+        ['text' => 'Inventory', 'file' => 'manager/inventory.php'],
     ];
 
     $html = '<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7eff3] px-10 py-3 bg-white relative">';
