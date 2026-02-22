@@ -59,12 +59,11 @@ $apiKey = $keyStmt->fetchColumn() ?: '';
 
 <head>
     <meta charset="utf-8" />
-    <title>PIVO — Logistics</title>
+    <title>PIVO — Logistics Dashboard</title>
     <link rel="stylesheet" href="../assets/css/style.css" />
 
     <!-- Leaflet CSS for Interactive Routing Maps -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
 
     <style>
         .map-container {
@@ -84,8 +83,7 @@ $apiKey = $keyStmt->fetchColumn() ?: '';
             z-index: 1;
         }
     </style>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <script>
         function markDelivered(orderId) {
             if (!confirm('Confirm delivery for Order #' + orderId + '?')) return;
@@ -151,7 +149,8 @@ $apiKey = $keyStmt->fetchColumn() ?: '';
         </div>
 
         <nav class="dash-nav">
-            <a href="dashboard.php" class="active">Route Map</a>
+            <a href="dashboard.php" class="active">Dashboard</a>
+            <a href="route_map.php">Route Map</a>
 
             <div class="user-menu" style="position:relative; margin-left:14px;">
                 <div onclick="toggleDropdown()" style="cursor:pointer; display:flex; align-items:center;">
@@ -209,7 +208,7 @@ $apiKey = $keyStmt->fetchColumn() ?: '';
                 </div>
             </div>
 
-            <!-- Interactive Route Map -->
+            <!-- Territory View Map -->
             <div class="map-container">
                 <div id="routeMap"></div>
             </div>
@@ -220,39 +219,31 @@ $apiKey = $keyStmt->fetchColumn() ?: '';
     <script>
         // Initialize Leaflet Map
         document.addEventListener('DOMContentLoaded', function () {
-            // Default center data
             const polygonCoords = <?= json_encode($polygonCoords) ?>;
             const ordersList = <?= json_encode($orders) ?>;
 
-            // Default to Colombo center if no polygon is set
             let mapCenter = [6.9271, 79.8612];
             let zoomLevel = 11;
 
-            // Create the map
             const map = L.map('routeMap').setView(mapCenter, zoomLevel);
 
-            // Add OpenStreetMap tiles
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
-                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                attribution: '&copy; OpenStreetMap'
             }).addTo(map);
 
-            // Draw Territory Polygon if exists
             if (polygonCoords && polygonCoords.length > 0) {
                 const territoryPoly = L.polygon(polygonCoords, {
-                    color: '#f57c00',    // Distinct orange line
+                    color: '#f57c00',    
                     fillColor: '#ffa726',
-                    fillOpacity: 0.2,    // Light orange fill inside territory
+                    fillOpacity: 0.2,    
                     weight: 3
                 }).addTo(map);
 
-                // Adjust map viewport to fit the polygon beautifully
                 map.fitBounds(territoryPoly.getBounds());
-
                 territoryPoly.bindPopup(`<b>Assigned Territory Area</b><br>Logistics operations restricted to this zone.`);
             }
 
-            // Plot Order Delivery Markers
             if (ordersList && ordersList.length > 0) {
                 ordersList.forEach(ord => {
                     const lat = parseFloat(ord.latitude);
@@ -261,7 +252,6 @@ $apiKey = $keyStmt->fetchColumn() ?: '';
                     if (!isNaN(lat) && !isNaN(lng)) {
                         const marker = L.marker([lat, lng]).addTo(map);
 
-                        // Bold informative popup
                         const popupHtml = `
                             <div style="font-family:sans-serif;">
                                 <h3 style="margin:0 0 5px 0; color:#f57c00;">Order #${ord.order_id}</h3>
