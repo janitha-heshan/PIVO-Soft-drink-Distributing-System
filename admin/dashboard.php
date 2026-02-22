@@ -5,6 +5,14 @@ require_once '../config/db.php';
 requireRole(['Admin', 'FactoryOwner']);
 
 $username = $_SESSION['username'];
+
+// Count open password reset tickets
+$openTickets = 0;
+try {
+    $openTickets = (int) $pdo->query("SELECT COUNT(*) FROM pw_reset_tickets WHERE status = 'Open'")->fetchColumn();
+} catch (Exception $e) {
+    // Table may not exist yet — ignore
+}
 ?>
 <!doctype html>
 <html lang="en">
@@ -25,6 +33,8 @@ $username = $_SESSION['username'];
 
         <nav class="dash-nav">
             <a href="dashboard.php" class="active">Dashboard</a>
+            <a href="manage_users.php">Users</a>
+            <a href="pw_reset_tickets.php">Reset Tickets</a>
             <a href="../Comp/DataAnalysis/insights.php">Analytics</a>
             <a href="../logout.php">Logout</a>
             <button class="avatar" style="background:#d93025;">A</button>
@@ -72,6 +82,20 @@ $username = $_SESSION['username'];
                 </div>
                 <h3>Shop View</h3>
                 <p>Access Shop Owner dashboard.</p>
+            </a>
+
+            <!-- Password Reset Tickets -->
+            <a href="pw_reset_tickets.php" class="action-card">
+                <div class="icon-box" style="background:#fee2e2;">
+                    <span style="font-size:24px;">🔑</span>
+                </div>
+                <h3>Password Reset Tickets
+                    <?php if ($openTickets > 0): ?>
+                        <span
+                            style="display:inline-block;background:#d93025;color:#fff;font-size:0.7rem;padding:1px 8px;border-radius:100px;margin-left:6px;"><?= $openTickets ?></span>
+                    <?php endif; ?>
+                </h3>
+                <p>Review and resolve user password reset requests.</p>
             </a>
 
         </section>

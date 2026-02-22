@@ -43,14 +43,11 @@ $orders = $orderStmt->fetchAll();
         </div>
 
         <nav class="dash-nav">
-            <a href="index.php">Home</a>
             <a href="shop_dashboard.php" class="active">Dashboard</a>
             <a href="order.php">Place Order</a>
             <a href="order_history.php">History</a>
-            <a href="logout.php" class="icon-btn" title="Log out">Log Out</a>
-            <button class="avatar">
-                <?php echo substr($username, 0, 1); ?>
-            </button>
+            <a href="logout.php">Logout</a>
+            <button class="avatar"><?= strtoupper(substr($username, 0, 1)) ?></button>
         </nav>
     </header>
 

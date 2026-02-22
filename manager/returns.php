@@ -2,7 +2,7 @@
 require_once '../includes/auth.php';
 require_once '../config/db.php';
 
-requireRole(['StoreManager', 'Admin']);
+requireRole(['StoreManager', 'ShopOwner', 'Admin', 'FactoryOwner']);
 
 $action = 'list';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -35,6 +35,9 @@ $returns = $pdo->query("
     JOIN shops s ON o.shop_id = s.shop_id
     ORDER BY r.return_date DESC
 ")->fetchAll();
+
+// Fetch products for dropdown
+$products = $pdo->query("SELECT product_id, product_name, volume_ml FROM products ORDER BY product_name ASC")->fetchAll();
 
 ?>
 <!doctype html>
@@ -82,7 +85,8 @@ $returns = $pdo->query("
             <span class="brand-name">PIVO Manager</span>
         </div>
         <nav class="dash-nav">
-            <a href="dashboard.php">Dashboard</a>
+            <?php $dashLink = ($_SESSION['role'] === 'FactoryOwner') ? '../factory/dashboard.php' : 'dashboard.php'; ?>
+            <a href="<?php echo $dashLink; ?>">Dashboard</a>
             <a href="inventory.php">Inventory</a>
             <a href="manage_products.php">Products</a>
             <a href="returns.php" class="active">Returns</a>
@@ -151,8 +155,16 @@ $returns = $pdo->query("
                 <h2>Log Return</h2>
                 <form method="POST" class="form">
                     <label>Order ID <input type="number" name="order_id" required placeholder="e.g. 101" /></label>
-                    <label>Product ID <input type="number" name="product_id" required
-                            placeholder="Find ID from Products page" /></label>
+                    <label>Product
+                        <select name="product_id" required>
+                            <option value="" disabled selected>-- Select Product --</option>
+                            <?php foreach ($products as $p): ?>
+                                <option value="<?php echo $p['product_id']; ?>">
+                                    <?php echo htmlspecialchars($p['product_name'] . ' - ' . $p['volume_ml']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </label>
                     <label>Quantity <input type="number" name="quantity" required /></label>
                     <label>Reason <input type="text" name="reason" placeholder="e.g. Damaged, Expired"
                             required /></label>

@@ -72,7 +72,10 @@ $roles = ['Admin', 'StoreManager', 'ShopOwner', 'SalesRep', 'SalesSupervisor', '
         <nav class="dash-nav">
             <a href="dashboard.php">Dashboard</a>
             <a href="manage_users.php" class="active">Users</a>
+            <a href="pw_reset_tickets.php">Reset Tickets</a>
+            <a href="../Comp/DataAnalysis/insights.php">Analytics</a>
             <a href="../logout.php">Logout</a>
+            <button class="avatar" style="background:#d93025;">A</button>
         </nav>
     </header>
 

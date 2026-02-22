@@ -2,7 +2,7 @@
 require_once '../includes/auth.php';
 require_once '../config/db.php';
 
-requireRole(['StoreManager', 'Admin']);
+requireRole(['StoreManager', 'ShopOwner', 'Admin', 'FactoryOwner']);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($_POST['action'] === 'update_stock') {
@@ -51,7 +51,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $desc = trim($_POST['description']);
         $sizeId = $_POST['size_id'];
 
+        $imagePath = '';
+        if (isset($_FILES['product_image']) && $_FILES['product_image']['error'] === UPLOAD_ERR_OK) {
+            $uploadDir = '../assets/images/products/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+            $fileName = time() . '_' . basename($_FILES['product_image']['name']);
+            $targetPath = $uploadDir . $fileName;
+
+            if (move_uploaded_file($_FILES['product_image']['tmp_name'], $targetPath)) {
+                $imagePath = 'assets/images/products/' . $fileName;
+            }
+        }
+
         try {
+            // Dynamic ENUM expansion (Add new product name format to DB if it doesn't exist)
+            // MUST be outside transaction since ALTER TABLE implicitly commits!
+            $enumStmt = $pdo->query("SHOW COLUMNS FROM products LIKE 'product_name'");
+            $enumRow = $enumStmt->fetch();
+            preg_match("/^enum\(\'(.*)\'\)$/", $enumRow['Type'], $matches);
+            $existingEnums = explode("','", $matches[1]);
+
+            if (!in_array($name, $existingEnums)) {
+                $existingEnums[] = $name;
+                $newEnumStr = "'" . implode("','", array_map(function ($val) {
+                    return addslashes($val);
+                }, $existingEnums)) . "'";
+                $pdo->exec("ALTER TABLE products MODIFY COLUMN product_name ENUM($newEnumStr) NOT NULL");
+            }
+
             $pdo->beginTransaction();
 
             // Handle New Size
@@ -72,18 +101,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
 
-            // Create Product
-            $insProd = $pdo->prepare("INSERT INTO products (product_name, size_id, unit_price, description, volume_ml) VALUES (?, ?, ?, ?, '')");
-            // Note: volume_ml in products is deprecated but keeping empty string to avoid DB error if NOT NULL constraint exists. 
-            // Wait, schema has it as NOT NULL. Let's act safe.
-            // Actually, we should fetch the volume_ml string to populate the legacy column just in case.
+            // Get the volume_ml string for the legacy column in products table (which is marked NOT NULL)
             $szStrStmt = $pdo->prepare("SELECT volume_ml FROM sizes WHERE size_id = ?");
             $szStrStmt->execute([$sizeId]);
             $szStr = $szStrStmt->fetchColumn();
 
-            // Re-prepare insert with legacy column support
-            $insProd = $pdo->prepare("INSERT INTO products (product_name, size_id, unit_price, description, volume_ml, image_path) VALUES (?, ?, ?, ?, ?, '')");
-            $insProd->execute([$name, $sizeId, $price, $desc, $szStr]);
+            if (!$szStr) {
+                throw new Exception("Invalid size selected.");
+            }
+
+            $insProd = $pdo->prepare("INSERT INTO products (product_name, size_id, unit_price, description, volume_ml, image_path) VALUES (?, ?, ?, ?, ?, ?)");
+            $insProd->execute([$name, $sizeId, $price, $desc, $szStr, $imagePath]);
             $newProdId = $pdo->lastInsertId();
 
             // Initialize Inventory
@@ -98,6 +126,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pdo->rollBack();
             header("Location: manage_products.php?error=" . urlencode($e->getMessage()));
             exit;
+        }
+    }
+
+    // EDIT PRODUCT ACTION
+    if ($_POST['action'] === 'edit_product') {
+        $prodId = intval($_POST['product_id']);
+        $name = trim($_POST['product_name']);
+        $price = floatval($_POST['unit_price']);
+        $desc = trim($_POST['description']);
+
+        $imageUpdateSql = "";
+        $imageParams = [];
+
+        if (isset($_FILES['product_image']) && $_FILES['product_image']['error'] === UPLOAD_ERR_OK) {
+            $uploadDir = '../assets/images/products/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+            $fileName = time() . '_' . basename($_FILES['product_image']['name']);
+            $targetPath = $uploadDir . $fileName;
+
+            if (move_uploaded_file($_FILES['product_image']['tmp_name'], $targetPath)) {
+                $imagePath = 'assets/images/products/' . $fileName;
+                $imageUpdateSql = ", image_path = ?";
+                $imageParams[] = $imagePath;
+            }
+        }
+
+        if ($prodId && !empty($name)) {
+            try {
+                // Dynamic ENUM expansion for Edit
+                $enumStmt = $pdo->query("SHOW COLUMNS FROM products LIKE 'product_name'");
+                $enumRow = $enumStmt->fetch();
+                preg_match("/^enum\(\'(.*)\'\)$/", $enumRow['Type'], $matches);
+                $existingEnums = explode("','", $matches[1]);
+
+                if (!in_array($name, $existingEnums)) {
+                    $existingEnums[] = $name;
+                    $newEnumStr = "'" . implode("','", array_map(function ($val) {
+                        return addslashes($val);
+                    }, $existingEnums)) . "'";
+                    $pdo->exec("ALTER TABLE products MODIFY COLUMN product_name ENUM($newEnumStr) NOT NULL");
+                }
+
+                $sql = "UPDATE products SET product_name = ?, unit_price = ?, description = ?" . $imageUpdateSql . " WHERE product_id = ?";
+                $params = array_merge([$name, $price, $desc], $imageParams, [$prodId]);
+
+                $updProd = $pdo->prepare($sql);
+                $updProd->execute($params);
+
+                header("Location: manage_products.php?success=1");
+                exit;
+            } catch (Exception $e) {
+                header("Location: manage_products.php?error=" . urlencode($e->getMessage()));
+                exit;
+            }
         }
     }
 }

@@ -2,14 +2,15 @@
 require_once '../includes/auth.php';
 require_once '../config/db.php';
 
-requireRole(['StoreManager', 'ShopOwner', 'Admin', 'FactoryOwner']);
+requireRole(['FactoryOwner', 'Admin']);
 
 $success = isset($_GET['success']);
+$error = $_GET['error'] ?? '';
 
-// Fetch inventory — volume_ml directly on products (no sizes table)
+// Fetch inventory — no sizes table, volume_ml is directly on products
 $inventory = $pdo->query("
     SELECT i.inventory_id, i.quantity_in_stock,
-           p.product_id, p.product_name, p.unit_price, p.volume_ml
+           p.product_id, p.product_name, p.unit_price, p.volume_ml, p.description
     FROM inventory i
     JOIN products p ON i.product_id = p.product_id
     ORDER BY p.product_name ASC, p.volume_ml ASC
@@ -61,38 +62,58 @@ foreach ($inventory as $item) {
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.45);
             justify-content: center;
             align-items: center;
+            z-index: 999;
+        }
+
+        .modal.open {
+            display: flex;
         }
 
         .modal-content {
-            background: white;
-            padding: 24px;
-            border-radius: 12px;
-            width: 400px;
+            background: #fff;
+            padding: 28px;
+            border-radius: 14px;
+            width: 420px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+        }
+
+        .modal-content h2 {
+            margin-bottom: 18px;
+            font-size: 1.2rem;
+        }
+
+        .badge-low {
+            display: inline-block;
+            background: #fee2e2;
+            color: #d93025;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 100px;
+            margin-left: 6px;
         }
 
         .flash-success {
-            background: #d1e7dd;
-            color: #0f5132;
+            background: #dcfce7;
+            color: #14532d;
             padding: 12px 16px;
             border-radius: 8px;
             margin-bottom: 16px;
+            font-size: 0.875rem;
+        }
+
+        .flash-error {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 0.875rem;
         }
     </style>
-    <script>
-        function openEditModal(id, name, stock, price) {
-            document.getElementById('editModal').style.display = 'flex';
-            document.getElementById('inv_id').value = id;
-            document.getElementById('edit_name').value = name;
-            document.getElementById('edit_stock').value = stock;
-            document.getElementById('edit_price').value = price;
-        }
-        function closeEditModal() {
-            document.getElementById('editModal').style.display = 'none';
-        }
-    </script>
 </head>
 
 <body>
@@ -100,14 +121,12 @@ foreach ($inventory as $item) {
     <header class="topbar">
         <div class="brand">
             <img src="../assets/images/logo-placeholder.png" alt="PIVO" class="logo" />
-            <span class="brand-name">PIVO Manager</span>
+            <span class="brand-name">PIVO Factory</span>
         </div>
         <nav class="dash-nav">
-            <?php $dashLink = ($_SESSION['role'] === 'FactoryOwner') ? '../factory/dashboard.php' : 'dashboard.php'; ?>
-            <a href="<?php echo $dashLink; ?>">Dashboard</a>
+            <a href="dashboard.php">Dashboard</a>
             <a href="inventory.php" class="active">Inventory</a>
-            <a href="manage_products.php">Products</a>
-            <a href="returns.php">Returns</a>
+            <a href="../Comp/DataAnalysis/insights.php">Analytics</a>
             <a href="../logout.php">Logout</a>
         </nav>
     </header>
@@ -120,31 +139,26 @@ foreach ($inventory as $item) {
         <?php if ($success): ?>
             <div class="flash-success">✅ Inventory updated successfully.</div>
         <?php endif; ?>
+        <?php if ($error): ?>
+            <div class="flash-error">❌ <?= htmlspecialchars(urldecode($error)) ?></div>
+        <?php endif; ?>
 
-        <div class="row" style="display:flex; gap: 24px; flex-wrap:wrap;">
-            <!-- Stock Histogram -->
-            <div class="chart-card" style="flex:1; min-width:400px;">
-                <h2>📊 Stock Level Overview — Threshold: 50 units</h2>
-                <div class="chart-wrap">
-                    <canvas id="stockChart"></canvas>
-                </div>
-            </div>
-
-            <!-- History Line Chart -->
-            <div class="chart-card" style="flex:1; min-width:400px;">
-                <h2>📈 Inventory Trends & History</h2>
-                <div class="chart-wrap">
-                    <canvas id="historyChart"></canvas>
-                </div>
+        <!-- Stock Histogram -->
+        <div class="chart-card">
+            <h2>📊 Stock Level Overview — Threshold: 50 units</h2>
+            <div class="chart-wrap">
+                <canvas id="stockChart"></canvas>
             </div>
         </div>
 
+        <!-- Inventory Table -->
         <section class="summary-card">
             <table class="order-table">
                 <thead>
                     <tr>
                         <th>Product</th>
                         <th>Size</th>
+                        <th>Description</th>
                         <th>Price (LKR)</th>
                         <th>Stock</th>
                         <th>Action</th>
@@ -155,42 +169,51 @@ foreach ($inventory as $item) {
                         <tr>
                             <td><?= htmlspecialchars($item['product_name']) ?></td>
                             <td><?= htmlspecialchars($item['volume_ml']) ?></td>
+                            <td><?= htmlspecialchars($item['description'] ?? '—') ?></td>
                             <td><?= number_format($item['unit_price'], 2) ?></td>
                             <td
                                 style="font-weight:bold; <?= $item['quantity_in_stock'] < 50 ? 'color:#d93025;' : 'color:#0f5132;' ?>">
                                 <?= $item['quantity_in_stock'] ?>
+                                <?php if ($item['quantity_in_stock'] < 50): ?>
+                                    <span class="badge-low">LOW</span>
+                                <?php endif; ?>
                             </td>
                             <td>
-                                <button
-                                    onclick="openEditModal(<?= $item['inventory_id'] ?>, '<?= $item['product_name'] ?>', <?= $item['quantity_in_stock'] ?>, <?= $item['unit_price'] ?>)"
-                                    class="link-btn">Edit</button>
+                                <button class="link-btn" onclick="openEdit(
+                                <?= $item['inventory_id'] ?>,
+                                '<?= htmlspecialchars(addslashes($item['product_name'] . ' ' . $item['volume_ml'])) ?>',
+                                <?= $item['quantity_in_stock'] ?>,
+                                <?= $item['unit_price'] ?>
+                            )">Edit</button>
                             </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
             </table>
         </section>
-
-        <!-- Edit Modal -->
-        <div id="editModal" class="modal">
-            <div class="modal-content">
-                <h2>Update Stock</h2>
-                <form action="product_action.php" method="POST" class="form">
-                    <input type="hidden" name="action" value="update_stock">
-                    <input type="hidden" name="inventory_id" id="inv_id">
-                    <label>Product <input type="text" id="edit_name" disabled /></label>
-                    <label>Stock Quantity <input type="number" name="quantity" id="edit_stock" required /></label>
-                    <label>Unit Price <input type="number" name="price" id="edit_price" step="0.01" required /></label>
-                    <div style="display:flex; gap:10px; margin-top:20px;">
-                        <button type="button" onclick="closeEditModal()" class="secondary full">Cancel</button>
-                        <button type="submit" class="primary full">Update</button>
-                    </div>
-                </form>
-            </div>
-        </div>
     </main>
 
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <h2>Update Stock</h2>
+            <form action="inventory_action.php" method="POST" class="form">
+                <input type="hidden" name="action" value="update_stock" />
+                <input type="hidden" name="inventory_id" id="inv_id" />
+                <label>Product <input type="text" id="edit_name" disabled /></label>
+                <label>Stock Quantity <input type="number" name="quantity" id="edit_stock" min="0" required /></label>
+                <label>Unit Price (LKR) <input type="number" name="price" id="edit_price" step="0.01" min="0"
+                        required /></label>
+                <div style="display:flex; gap:10px; margin-top:20px;">
+                    <button type="button" onclick="closeEdit()" class="secondary full">Cancel</button>
+                    <button type="submit" class="primary full">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
+        // Chart
         const ctx = document.getElementById('stockChart').getContext('2d');
         new Chart(ctx, {
             type: 'bar',
@@ -208,11 +231,26 @@ foreach ($inventory as $item) {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { beginAtZero: true, grid: { color: '#f0f0f0' } },
-                    x: { grid: { display: false }, ticks: { maxRotation: 30, font: { size: 11 } } }
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            afterLabel: (ctx) => ctx.parsed.y < 50 ? '⚠ Below threshold!' : '✓ Sufficient'
+                        }
+                    }
                 },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#f0f0f0' },
+                        ticks: { font: { size: 12 } }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 11 }, maxRotation: 30 }
+                    }
+                },
+                // Threshold annotation via plugin (inline)
                 animation: {
                     onComplete: function (animation) {
                         const chart = animation.chart;
@@ -221,6 +259,7 @@ foreach ($inventory as $item) {
                         const xStart = chart.chartArea.left;
                         const xEnd = chart.chartArea.right;
                         const y50 = yScale.getPixelForValue(50);
+
                         ctx2.save();
                         ctx2.beginPath();
                         ctx2.moveTo(xStart, y50);
@@ -239,32 +278,20 @@ foreach ($inventory as $item) {
             }
         });
 
-        // Fetch and Render History Line Chart
-        fetch('api_inventory_history.php')
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    const hCtx = document.getElementById('historyChart').getContext('2d');
-                    new Chart(hCtx, {
-                        type: 'line',
-                        data: {
-                            labels: data.labels,
-                            datasets: data.datasets
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } }
-                            },
-                            scales: {
-                                y: { beginAtZero: true },
-                                x: { grid: { display: false } }
-                            }
-                        }
-                    });
-                }
-            });
+        // Modal controls
+        function openEdit(id, name, stock, price) {
+            document.getElementById('inv_id').value = id;
+            document.getElementById('edit_name').value = name;
+            document.getElementById('edit_stock').value = stock;
+            document.getElementById('edit_price').value = price;
+            document.getElementById('editModal').classList.add('open');
+        }
+        function closeEdit() {
+            document.getElementById('editModal').classList.remove('open');
+        }
+        document.getElementById('editModal').addEventListener('click', function (e) {
+            if (e.target === this) closeEdit();
+        });
     </script>
 
 </body>

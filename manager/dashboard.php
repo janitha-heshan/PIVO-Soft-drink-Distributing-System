@@ -2,7 +2,7 @@
 require_once '../includes/auth.php';
 require_once '../config/db.php';
 
-requireRole(['StoreManager', 'Admin']);
+requireRole(['StoreManager', 'ShopOwner', 'Admin']);
 
 $currentUser = $_SESSION['username'];
 
@@ -18,10 +18,9 @@ $pendingOrders = $pendStmt->fetchAll();
 
 // Check Low Stock (Threshold < 50 for demo)
 $stockStmt = $pdo->query("
-    SELECT p.product_name, s.volume_ml, i.quantity_in_stock
+    SELECT p.product_name, p.volume_ml, i.quantity_in_stock
     FROM inventory i
     JOIN products p ON i.product_id = p.product_id
-    JOIN sizes s ON p.size_id = s.size_id
     WHERE i.quantity_in_stock < 50
 ");
 $lowStock = $stockStmt->fetchAll();
@@ -88,6 +87,7 @@ $lowStock = $stockStmt->fetchAll();
             <a href="dashboard.php" class="active">Dashboard</a>
             <a href="inventory.php">Inventory</a>
             <a href="manage_products.php">Products</a>
+            <a href="returns.php">Returns</a>
             <a href="../logout.php">Logout</a>
             <button class="avatar" style="background:#5e35b1;">M</button>
         </nav>

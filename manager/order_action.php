@@ -4,7 +4,7 @@ require_once '../config/db.php';
 
 header('Content-Type: application/json');
 
-if (!isLoggedIn() || !in_array($_SESSION['role'], ['StoreManager', 'Admin'])) {
+if (!isLoggedIn() || !in_array($_SESSION['role'], ['StoreManager', 'ShopOwner', 'Admin'])) {
     echo json_encode(['success' => false, 'message' => 'Unauthorized']);
     exit;
 }

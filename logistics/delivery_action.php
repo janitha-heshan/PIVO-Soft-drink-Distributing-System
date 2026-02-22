@@ -19,10 +19,35 @@ if (!$orderId || $action !== 'deliver') {
     exit;
 }
 
-// In a real app, verify $input['gps_lat'] against Shop Coordinates
+// Haversine formula
+function getDistance($lat1, $lon1, $lat2, $lon2)
+{
+    $earthRadius = 6371; // km
+    $dLat = deg2rad($lat2 - $lat1);
+    $dLon = deg2rad($lon2 - $lon1);
+    $a = sin($dLat / 2) * sin($dLat / 2) + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * sin($dLon / 2) * sin($dLon / 2);
+    $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+    return $earthRadius * $c;
+}
 
 try {
     $pdo->beginTransaction();
+
+    // Verify Geofence
+    $shopStmt = $pdo->prepare("SELECT s.latitude, s.longitude FROM orders o JOIN shops s ON o.shop_id = s.shop_id WHERE o.order_id = ?");
+    $shopStmt->execute([$orderId]);
+    $shop = $shopStmt->fetch();
+
+    if ($shop && !is_null($shop['latitude']) && !is_null($shop['longitude'])) {
+        $repLat = floatval($input['gps_lat'] ?? 0);
+        $repLng = floatval($input['gps_lng'] ?? 0);
+
+        $distance = getDistance($shop['latitude'], $shop['longitude'], $repLat, $repLng);
+
+        if ($distance > 1.0) {
+            throw new Exception("You are too far from the shop to complete this delivery. (Distance: " . round($distance, 2) . " km)");
+        }
+    }
 
     // Update Status
     $stmt = $pdo->prepare("UPDATE orders SET delivery_status = 'Delivered', status_updated_at = NOW() WHERE order_id = ?");
