@@ -92,6 +92,21 @@ foreach ($inventory as $item) {
         function closeEditModal() {
             document.getElementById('editModal').style.display = 'none';
         }
+
+        function toggleDropdown() {
+            var d = document.getElementById("userDropdown");
+            if (d.style.display === "block") {
+                d.style.display = "none";
+            } else {
+                d.style.display = "block";
+            }
+        }
+        window.onclick = function (event) {
+            if (!event.target.closest('.user-menu')) {
+                const drop = document.getElementById("userDropdown");
+                if (drop) drop.style.display = "none";
+            }
+        }
     </script>
 </head>
 
@@ -108,7 +123,19 @@ foreach ($inventory as $item) {
             <a href="inventory.php" class="active">Inventory</a>
             <a href="manage_products.php">Products</a>
             <a href="returns.php">Returns</a>
-            <a href="../logout.php">Logout</a>
+            <a href="manage_territories.php">Territories</a>
+
+            <div class="user-menu" style="position:relative; margin-left:14px;">
+                <div onclick="toggleDropdown()" style="cursor:pointer; display:flex; align-items:center;">
+                    <button class="avatar" style="background:#5e35b1; margin:0;">
+                        <?= strtoupper(substr($_SESSION['username'], 0, 1)) ?>
+                    </button>
+                </div>
+                <div id="userDropdown" class="dropdown-content" style="right:0; left:auto;">
+                    <a href="../profile.php">My Profile</a>
+                    <a href="../logout.php" style="color:#d93025;">Logout</a>
+                </div>
+            </div>
         </nav>
     </header>
 

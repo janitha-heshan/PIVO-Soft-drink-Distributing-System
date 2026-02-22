@@ -58,6 +58,22 @@ $totalUnits = $pdo->query("SELECT COALESCE(SUM(quantity_in_stock),0) FROM invent
             color: #d93025;
         }
     </style>
+    <script>
+        function toggleDropdown() {
+            var d = document.getElementById("userDropdown");
+            if (d.style.display === "block") {
+                d.style.display = "none";
+            } else {
+                d.style.display = "block";
+            }
+        }
+        window.onclick = function (event) {
+            if (!event.target.closest('.user-menu')) {
+                const drop = document.getElementById("userDropdown");
+                if (drop) drop.style.display = "none";
+            }
+        }
+    </script>
 </head>
 
 <body>
@@ -72,11 +88,20 @@ $totalUnits = $pdo->query("SELECT COALESCE(SUM(quantity_in_stock),0) FROM invent
             <a href="../manager/inventory.php">Inventory</a>
             <a href="../manager/manage_products.php">Products</a>
             <a href="../manager/returns.php">Returns</a>
+            <a href="../manager/manage_territories.php">Territories</a>
             <a href="../Comp/DataAnalysis/insights.php">Analytics</a>
-            <a href="../logout.php">Logout</a>
-            <button class="avatar" style="background:#16a34a;">
-                <?= strtoupper(substr($username, 0, 1)) ?>
-            </button>
+
+            <div class="user-menu" style="position:relative; margin-left:14px;">
+                <div onclick="toggleDropdown()" style="cursor:pointer; display:flex; align-items:center;">
+                    <button class="avatar" style="background:#16a34a; margin:0;">
+                        <?= strtoupper(substr($username, 0, 1)) ?>
+                    </button>
+                </div>
+                <div id="userDropdown" class="dropdown-content" style="right:0; left:auto;">
+                    <a href="../profile.php">My Profile</a>
+                    <a href="../logout.php" style="color:#d93025;">Logout</a>
+                </div>
+            </div>
         </nav>
     </header>
 

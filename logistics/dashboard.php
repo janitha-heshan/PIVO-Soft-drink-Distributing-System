@@ -7,17 +7,49 @@ requireRole(['SalesSupervisor', 'SalesRep', 'Admin']);
 $role = $_SESSION['role'];
 $userId = $_SESSION['user_id'];
 
+// Fetch the logged-in user's assigned polygon territory
+$territoryStmt = $pdo->prepare("
+    SELECT ga.area_name, ST_AsText(ga.boundary_polygon) as polygon_text 
+    FROM area_assignments aa
+    JOIN geofenced_areas ga ON aa.area_id = ga.area_id
+    WHERE aa.sales_rep_id = ?
+");
+$territoryStmt->execute([$userId]);
+$territory = $territoryStmt->fetch();
+
+// Parse the Polygon Text to an array of coordinate pairs for the frontend map
+$polygonCoords = [];
+if ($territory && !empty($territory['polygon_text'])) {
+    // POLYGON((lng lat, lng lat, ...))
+    preg_match("/POLYGON\(\((.*)\)\)/", $territory['polygon_text'], $matches);
+    if (!empty($matches[1])) {
+        $points = explode(',', $matches[1]);
+        foreach ($points as $pt) {
+            $coords = explode(' ', trim($pt));
+            // Leaflet expects [lat, lng]
+            if (count($coords) == 2) {
+                $polygonCoords[] = [floatval($coords[1]), floatval($coords[0])];
+            }
+        }
+    }
+}
+
 // Fetch Orders ready for delivery (Preparing) or already On Route
-$stmt = $pdo->query("
-    SELECT o.order_id, o.order_date, o.delivery_status, o.total_amount, s.shop_name, s.address, s.contact_number
+// NEW LOGIC: Only fetch orders that fall inside the assigned polygon using ST_Contains
+$stmt = $pdo->prepare("
+    SELECT o.order_id, o.order_date, o.delivery_status, o.total_amount, s.shop_name, s.address, s.contact_number, s.latitude, s.longitude
     FROM orders o
     JOIN shops s ON o.shop_id = s.shop_id
+    LEFT JOIN area_assignments aa ON aa.sales_rep_id = ?
+    LEFT JOIN geofenced_areas ga ON aa.area_id = ga.area_id
     WHERE o.delivery_status IN ('Preparing', 'Dispatched')
+    AND (ga.boundary_polygon IS NULL OR ST_Contains(ga.boundary_polygon, POINT(s.longitude, s.latitude)))
     ORDER BY o.order_date ASC
 ");
+$stmt->execute([$userId]);
 $orders = $stmt->fetchAll();
 
-// Fetch Google Maps API Key
+// Fetch Google Maps API Key (Optional now, as we'll use open-source Leaflet)
 $keyStmt = $pdo->prepare("SELECT api_key FROM api_configurations WHERE service_name = 'google_maps'");
 $keyStmt->execute();
 $apiKey = $keyStmt->fetchColumn() ?: '';
@@ -29,6 +61,31 @@ $apiKey = $keyStmt->fetchColumn() ?: '';
     <meta charset="utf-8" />
     <title>PIVO — Logistics</title>
     <link rel="stylesheet" href="../assets/css/style.css" />
+
+    <!-- Leaflet CSS for Interactive Routing Maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+    <style>
+        .map-container {
+            flex: 1;
+            background: #e0e0e0;
+            border-radius: 12px;
+            min-height: 500px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 2px solid #fff;
+        }
+
+        #routeMap {
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+    </style>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script>
         function markDelivered(orderId) {
             if (!confirm('Confirm delivery for Order #' + orderId + '?')) return;
@@ -67,6 +124,21 @@ $apiKey = $keyStmt->fetchColumn() ?: '';
                     }
                 });
         }
+
+        function toggleDropdown() {
+            var d = document.getElementById("userDropdown");
+            if (d.style.display === "block") {
+                d.style.display = "none";
+            } else {
+                d.style.display = "block";
+            }
+        }
+        window.onclick = function (event) {
+            if (!event.target.closest('.user-menu')) {
+                const drop = document.getElementById("userDropdown");
+                if (drop) drop.style.display = "none";
+            }
+        }
     </script>
 </head>
 
@@ -80,9 +152,18 @@ $apiKey = $keyStmt->fetchColumn() ?: '';
 
         <nav class="dash-nav">
             <a href="dashboard.php" class="active">Route Map</a>
-            <a href="../logout.php">Logout</a>
-            <button class="avatar"
-                style="background:#f57c00;"><?= strtoupper(substr($_SESSION['username'], 0, 1)) ?></button>
+
+            <div class="user-menu" style="position:relative; margin-left:14px;">
+                <div onclick="toggleDropdown()" style="cursor:pointer; display:flex; align-items:center;">
+                    <button class="avatar" style="background:#f57c00; margin:0;">
+                        <?= strtoupper(substr($_SESSION['username'], 0, 1)) ?>
+                    </button>
+                </div>
+                <div id="userDropdown" class="dropdown-content" style="right:0; left:auto;">
+                    <a href="../profile.php">My Profile</a>
+                    <a href="../logout.php" style="color:#d93025;">Logout</a>
+                </div>
+            </div>
         </nav>
     </header>
 
@@ -128,24 +209,74 @@ $apiKey = $keyStmt->fetchColumn() ?: '';
                 </div>
             </div>
 
-            <!-- Map Placeholder -->
-            <div
-                style="flex: 1; background:#e0e0e0; border-radius:12px; min-height:400px; display:flex; align-items:center; justify-content:center; color:#777; position:relative; overflow:hidden;">
-                <?php if (!empty($apiKey)): ?>
-                    <iframe width="100%" height="100%" style="border:0" loading="lazy" allowfullscreen
-                        src="https://www.google.com/maps/embed/v1/place?key=<?php echo htmlspecialchars($apiKey); ?>&q=Colombo,Sri+Lanka">
-                    </iframe>
-                <?php else: ?>
-                    <div style="text-align:center;">
-                        <h3 style="font-size:24px;">🗺️</h3>
-                        <p>Google Maps Integration</p>
-                        <p style="font-size:12px; color:#d93025;">(API Key not configured)</p>
-                    </div>
-                <?php endif; ?>
+            <!-- Interactive Route Map -->
+            <div class="map-container">
+                <div id="routeMap"></div>
             </div>
 
         </div>
     </main>
+
+    <script>
+        // Initialize Leaflet Map
+        document.addEventListener('DOMContentLoaded', function () {
+            // Default center data
+            const polygonCoords = <?= json_encode($polygonCoords) ?>;
+            const ordersList = <?= json_encode($orders) ?>;
+
+            // Default to Colombo center if no polygon is set
+            let mapCenter = [6.9271, 79.8612];
+            let zoomLevel = 11;
+
+            // Create the map
+            const map = L.map('routeMap').setView(mapCenter, zoomLevel);
+
+            // Add OpenStreetMap tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+
+            // Draw Territory Polygon if exists
+            if (polygonCoords && polygonCoords.length > 0) {
+                const territoryPoly = L.polygon(polygonCoords, {
+                    color: '#f57c00',    // Distinct orange line
+                    fillColor: '#ffa726',
+                    fillOpacity: 0.2,    // Light orange fill inside territory
+                    weight: 3
+                }).addTo(map);
+
+                // Adjust map viewport to fit the polygon beautifully
+                map.fitBounds(territoryPoly.getBounds());
+
+                territoryPoly.bindPopup(`<b>Assigned Territory Area</b><br>Logistics operations restricted to this zone.`);
+            }
+
+            // Plot Order Delivery Markers
+            if (ordersList && ordersList.length > 0) {
+                ordersList.forEach(ord => {
+                    const lat = parseFloat(ord.latitude);
+                    const lng = parseFloat(ord.longitude);
+
+                    if (!isNaN(lat) && !isNaN(lng)) {
+                        const marker = L.marker([lat, lng]).addTo(map);
+
+                        // Bold informative popup
+                        const popupHtml = `
+                            <div style="font-family:sans-serif;">
+                                <h3 style="margin:0 0 5px 0; color:#f57c00;">Order #${ord.order_id}</h3>
+                                <strong>${ord.shop_name}</strong><br>
+                                📍 ${ord.address}<br>
+                                📞 ${ord.contact_number}<br>
+                                📦 <span style="font-size:12px; background:#fff3e0; padding:2px 6px; border-radius:10px;">${ord.delivery_status}</span>
+                            </div>
+                        `;
+                        marker.bindPopup(popupHtml);
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>
