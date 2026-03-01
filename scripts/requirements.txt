@@ -1,0 +1,10 @@
+# Database Connectivity
+mysql-connector-python
+
+# Data Manipulation & Math
+pandas
+numpy
+
+# Machine Learning & Model Serialization
+scikit-learn
+joblib
