@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PIVO — Dashboard</title>
+  <link rel="stylesheet" href="/Inc/Css/style1.css" />
+
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img src="/Res/images/logo-placeholder.png"  alt="PIVO" class="logo" />
+      <span class="brand-name">PIVO Holdings</span>
+    </div>
+    <nav class="top-actions dash-nav">
+      <a class="link-btn" href="/Comp/UserManagement/dashboard.html">Dashboard</a>
+      <a class="link-btn" href="#">Sales</a>
+      <a class="link-btn" href="#">Inventory</a>
+      <button id="logout" class="avatar" title="Log out" aria-label="Log out" id="avatar-btn">S</button>
+    </nav>
+  </header>
+
+  <main class="container">
+    <header class="dash-header">
+      <h1>Welcome back, <span id="welcome-name">User</span></h1>
+      <div class="dash-nav">
+        <a href="#" class="muted">Dashboard</a>
+        <a href="#" class="muted">Sales</a>
+        <a href="#" class="muted">Inventory</a>
+        <a href="#" class="muted">Reports</a>
+        <a href="#" class="muted">About Us</a>
+        <button id="logout" class="avatar">S</button>
+      </div>
+    </header>
+
+    <section class="product-overview">
+      <h2>Product Overview</h2>
+      <div class="cards">
+        <article class="product-card"><img src="/Res/images/dashboard.jpg" alt="Mango Juice" /><h3>Mango Juice</h3><p class="desc">Refreshing mango juice in various sizes.</p></article>
+        <article class="product-card"><img src="/Res/images/dashboard.jpg" alt="Mixed Fruit Juice" /><h3>Mixed Fruit Juice</h3><p class="desc">A blend of fruits for a unique taste.</p></article>
+        <article class="product-card"><img src="/Res/images/dashboard.jpg" alt="Woodapple Juice" /><h3>Woodapple Juice</h3><p class="desc">Exotic woodapple juice, a local favorite.</p></article>
+        <article class="product-card"><img src="/Res/images/dashboard.jpg" alt="Aloe Vera Juice" /><h3>Aloe Vera Juice</h3><p class="desc">Cooling aloe vera juice with benefits.</p></article>
+      </div>
+    </section>
+
+    <section class="available-sizes">
+      <h2>Available Sizes</h2>
+      <div class="size-grid">
+        <div class="size-card">250 ml</div>
+        <div class="size-card">500 ml</div>
+        <div class="size-card">1 L</div>
+        <div class="size-card">2 L</div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <small>© <span id="year"></span> PIVO Holdings — Built with ❤️</small>
+  </footer>
+
+  <script src="/Inc/Js/app.js"></script>
+</body>
+</html>

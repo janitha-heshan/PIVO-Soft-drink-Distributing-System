@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PIVO — Login</title>
+ <link rel="stylesheet" href="/Inc/Css/style1.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img src="/Res/images/logo-placeholder.png"  alt="PIVO" class="logo" />
+      <span class="brand-name">PIVO Holdings</span>
+    </div>
+    <nav class="top-actions">
+      <a class="link-btn" href="/Comp/UserManagement/dashboard.html">Products</a>
+      <a class="pill" href="login.html">Log In</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="view active">
+      <div class="hero-img-wrap">
+        <img src="/Res/images/login.jpg" alt="Hero" class="hero-img" />
+      </div>
+      <div class="form-card center">
+        <h1>Welcome To Pivo Holdings</h1>
+        <form id="login-form" class="form">
+          <label>Username or Email
+            <input type="text" id="login-username" placeholder="Enter your username or email" />
+          </label>
+          <label>Password
+            <input type="password" id="login-password" placeholder="Enter your password" />
+          </label>
+          <div class="small-link">
+            <a href="#" id="forgot-password">Forgot Password?</a>
+          </div>
+          <button type="submit" class="primary full">Log In</button>
+          <p class="muted">Don't have an account? <a href="/Comp/UserManagement/signup.html">Sign up</a></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <small>© <span id="year"></span> PIVO Holdings — Built with ❤️</small>
+  </footer>
+
+   <script src="/Inc/Js/app.js"></script>
+</body>
+</html>
