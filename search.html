@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Shop Search</title>
+    <style>
+        body { font-family: sans-serif; margin: 40px; }
+        .search-box { margin-bottom: 20px; }
+        input { padding: 8px; width: 250px; }
+        button { padding: 8px 15px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h2>Search Shop by ID</h2>
+    <form action="fetch_shopSearch.php" method="GET" class="search-box">
+        <input type="number" name="shop_id" placeholder="Enter Shop ID (e.g. 1)" required>
+        <button type="submit">Search</button>
+    </form>
+</body>
+</html>

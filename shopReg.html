@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop Registration</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .form-card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); width: 100%; max-width: 450px; }
+        h2 { color: #333; text-align: center; margin-bottom: 20px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
+        input, select, textarea { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        textarea { resize: vertical; min-height: 80px; }
+        button { width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+
+    <div class="form-card">
+        <h2>Register Shop</h2>
+        <form id="registrationForm">
+            <label>User ID</label>
+            <input type="number" name="user_id" required>
+
+            <label>Shop Name</label>
+            <input type="text" name="shop_name" required>
+
+            <label>Address</label>
+            <textarea name="Address" required placeholder="Enter full shop address"></textarea>
+
+            <label>Category</label>
+            <select name="user_category">
+                <option value="Retail">Retail</option>
+                <option value="Wholesale">Wholesale</option>
+                <option value="Online">Online</option>
+            </select>
+
+            <button type="submit">Register Now</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('registrationForm').addEventListener('submit', function (e) {
+            e.preventDefault(); 
+
+            const formData = new FormData(this);
+
+            fetch('register.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json()) // Expecting a JSON response now
+            .then(data => {
+                if (data.status === 'success') {
+                    alert("Registration Successful! Shop ID: " + data.shop_id);
+                    window.location.href = '../Login/dashboardShop.html';
+                } else {
+                    alert("Error: " + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("Something went wrong with the connection.");
+            });
+        });
+    </script>
+</body>
+</html>
