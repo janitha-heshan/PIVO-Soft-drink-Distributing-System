@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PIVO — Place Order</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="brand">
+      <img src="images/logo-placeholder.png" alt="PIVO" class="logo" />
+      <span class="brand-name">PIVO Holdings</span>
+    </div>
+    
+    <nav class="dash-nav">
+      <a href="home.html">Home</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="order.html" class="active">Place Order</a>
+      <a href="ord_summary.html">Order Summary</a>
+
+ 
+      
+      
+      <button id="logout" class="avatar" title="Log out">U</button>
+    </nav>
+  </header>
+
+  <main class="container">
+    <div class="dash-header">
+      <h1>Place New Order</h1>
+      <p class="text-muted">Select products and add them to the list.</p>
+    </div>
+
+    <div class="order-layout">
+      
+      <section class="form-card order-form">
+        <h2>Add Product</h2>
+        <form id="addItemForm" class="form">
+          
+          <label>
+            Select Product
+            <select id="productSelect" required>
+              <option value="" disabled selected>-- Choose Drink --</option>
+              <option value="Mango Nectar">Mango Nectar</option>
+              <option value="Mix Fruit">Mix Fruit</option>
+              <option value="Aloe Vera">Aloe Vera</option>
+              <option value="Wood Apple">Wood Apple</option>
+            </select>
+          </label>
+
+          <div class="row">
+            <label class="half">
+              Size
+              <select id="sizeSelect" required>
+                <option value="200ml">200ml</option>
+                <option value="500ml">500ml</option>
+                <option value="1L">1L</option>
+              </select>
+            </label>
+            
+            <label class="half">
+              Quantity
+              <input type="number" id="quantityInput" min="1" value="1" required />
+            </label>
+          </div>
+
+          <div class="price-display">
+            Unit Price: <span id="unitPriceDisplay">LKR 0.00</span>
+          </div>
+
+          <button type="submit" class="primary full">Add to Order</button>
+        </form>
+      </section>
+
+      <section class="summary-card">
+        <h2>Order Summary</h2>
+        
+        <div class="table-wrapper">
+          <table class="order-table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Size</th>
+                <th>Qty</th>
+                <th>Total (LKR)</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="orderTableBody">
+              <tr id="emptyRow">
+                <td colspan="5" style="text-align:center; color:var(--muted);">No items added yet.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="grand-total-area">
+          <span>Grand Total:</span>
+          <span class="total-amount" id="grandTotal">LKR 0.00</span>
+        </div>
+
+        <button id="submitOrderBtn" class="primary full" style="margin-top: 20px;" disabled>Submit Order</button>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <small>© <span id="year"></span> PIVO Holdings</small>
+  </footer>
+
+  <script src="order.js"></script>
+
+</body>
+</html>
