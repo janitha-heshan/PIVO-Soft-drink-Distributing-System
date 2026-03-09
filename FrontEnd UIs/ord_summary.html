@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PIVO — Order Summary</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="brand">
+      <img src="images/logo-placeholder.png" alt="PIVO" class="logo" />
+      <span class="brand-name">PIVO Holdings</span>
+    </div>
+    
+    <nav class="dash-nav">
+      <a href="home.html">Dashboard</a>
+      <a href="order.html">Place Order</a>
+      <a href="ord_summary.html" class="active">Summary</a>
+      <a href="about.html">About Us</a>
+      <button id="logout" class="avatar" title="Log out">U</button>
+    </nav>
+  </header>
+
+  <main class="container">
+    
+    <div class="invoice-card" id="invoiceArea">
+      
+      <div class="invoice-header">
+        <div class="icon-check">✓</div>
+        <h1>Order Confirmed!</h1>
+        <p class="text-muted">Thank you. Your order has been received.</p>
+      </div>
+
+      <div class="invoice-meta">
+        <div>
+          <p class="label">Order ID</p>
+          <p class="val" id="orderId">#ORD-0000</p>
+        </div>
+        <div>
+          <p class="label">Date</p>
+          <p class="val" id="orderDate">Oct 24, 2025</p>
+        </div>
+        <div>
+          <p class="label">Status</p>
+          <span class="pill status-pill">Processing</span>
+        </div>
+      </div>
+
+      <div class="table-wrapper">
+        <table class="order-table" style="margin-top:0;">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Size</th>
+              <th>Qty</th>
+              <th style="text-align:right;">Amount (LKR)</th>
+            </tr>
+          </thead>
+          <tbody id="summaryTableBody">
+            </tbody>
+        </table>
+      </div>
+
+      <div class="invoice-total">
+        <div class="row-total">
+          <span>Subtotal</span>
+          <span id="subTotal">LKR 0.00</span>
+        </div>
+        <div class="row-total grand">
+          <span>Grand Total</span>
+          <span class="total-amount" id="grandTotal">LKR 0.00</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="invoice-actions">
+      <button class="secondary" onclick="window.print()">Print Receipt</button>
+      <a href="dashboard.html" class="primary">Back to Dashboard</a>
+    </div>
+
+  </main>
+
+  <footer class="site-footer">
+    <small>© <span id="year"></span> PIVO Holdings</small>
+  </footer>
+
+  <script src="ord_summary.js"></script>
+
+</body>
+</html>
