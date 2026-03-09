@@ -89,7 +89,7 @@ $totalUnits = $pdo->query("SELECT COALESCE(SUM(quantity_in_stock),0) FROM invent
             <a href="../manager/manage_products.php">Products</a>
             <a href="../manager/returns.php">Returns</a>
             <a href="../manager/manage_territories.php">Territories</a>
-            <a href="../Comp/DataAnalysis/insights.php">Analytics</a>
+            <a href="../Comp/DataAnalysis/SalesDashboard.php">Analytics</a>
 
             <div class="user-menu" style="position:relative; margin-left:14px;">
                 <div onclick="toggleDropdown()" style="cursor:pointer; display:flex; align-items:center;">
