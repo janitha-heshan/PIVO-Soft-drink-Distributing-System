@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PIVO — Login</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="brand">
+      <img src="images/logo-placeholder.png" alt="PIVO" class="logo" />
+      <span class="brand-name">PIVO Holdings</span>
+    </div>
+
+  </header>
+
+  <main class="container">
+    <section class="form-card">
+      <h1>Welcome Back</h1>
+      
+      <form class="form" id="loginForm">
+        <label>
+          Username
+          <input type="text" id="username" name="username" placeholder="Enter your username" required />
+        </label>
+        
+        <label>
+          Password
+          <input type="password" id="password" name="password" placeholder="Enter your password" required />
+        </label>
+
+        <div class="text-right">
+            <a href="#" class="link-sm">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="primary full">Log In</button>
+      </form>
+
+      <p class="muted">
+        Don't have an account? <a href="signup.html" class="accent-link">Sign up</a>
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <small>© <span id="year"></span> PIVO Holdings</small>
+  </footer>
+
+  <script src="login.js"></script>
+</body>
+</html>
