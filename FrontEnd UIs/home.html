@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PIVO — Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="brand">
+      <img src="images/logo-placeholder.png" alt="PIVO" class="logo" />
+      <span class="brand-name">PIVO Holdings</span>
+    </div>
+    
+    <nav class="dash-nav">
+      <a href="home.html" class="active">Home</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="about.html">About Us</a>
+
+      
+      
+      <button id="logout" class="avatar" title="Log out">U</button>
+    </nav>
+  </header>
+
+  <main class="container">
+    <div class="dash-header">
+      <h1>Welcome back!</h1>
+      <a href="order.html" class="primary">New Order +</a>
+    </div>
+
+    <section class="product-overview">
+      <h2>Our Products</h2>
+      <br>
+      <div class="cards">
+        <article class="product-card">
+          <div class="img-placeholder" style="background:#ffedcc;">Image</div>
+          <h3>Mango Nectar</h3>
+          <p class="desc">Fresh mango pulp with natural sweetness.</p>
+        </article>
+
+        <article class="product-card">
+          <div class="img-placeholder" style="background:#ffecec;">Image</div>
+          <h3>Mix Fruit</h3>
+          <p class="desc">A perfect blend of tropical island fruits.</p>
+        </article>
+
+        <article class="product-card">
+          <div class="img-placeholder" style="background:#e8f5e9;">Image</div>
+          <h3>Aloe Vera</h3>
+          <p class="desc">Healthy and refreshing with real aloe chunks.</p>
+        </article>
+
+        <article class="product-card">
+          <div class="img-placeholder" style="background:#f3e5f5;">Image</div>
+          <h3>Wood Apple</h3>
+          <p class="desc">Traditional Sri Lankan wood apple cream.</p>
+        </article>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <small>© <span id="year"></span> PIVO Holdings</small>
+  </footer>
+
+  <script src="app.js"></script> 
+  <script>
+      // Simple logout logic for the home page
+      document.getElementById('logout').addEventListener('click', function(){
+          window.location.href = 'login.html';
+      });
+      document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+
+</body>
+</html>
