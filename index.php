@@ -193,7 +193,7 @@ require_once 'includes/auth.php'; // For getDashboardPath
                 <div class="product-card">
                     <div class="img-placeholder" style="background:#e8f5e9; color:#2e7d32;">Apple Image</div>
                     <h3>Apple Soda</h3>
-                    <p class="desc">Crisp, sparkling refreshment with real apple juice.</p>
+                    <p class="desc">Crisp, sparkling refreshment with real apple juice..</p>
                 </div>
                 <div class="product-card">
                     <div class="img-placeholder" style="background:#f3e5f5; color:#7b1fa2;">Mix Fruit Image</div>
